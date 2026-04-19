@@ -2,11 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- #5: IMPROVED iOS VIEWPORT SETTINGS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0, user-scalable=yes">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="For My Duck">
+    <meta name="theme-color" content="#0b132b">
+    
     <title>For My Favorite Duck 🦆</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@300;400;600;700&family=Caveat:wght@700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
     <style>
         :root {
             --pond-blue: #a2d2ff;
@@ -27,6 +36,15 @@
             overflow-x: hidden;
             scroll-behavior: smooth;
             cursor: crosshair;
+        }
+
+        /* #6: PREVENT TEXT SELECTION & CALLOUT MENUS ON INTERACTIVE ELEMENTS */
+        .btn, .btn-group, #music-control, .polaroid, .interactive {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-touch-callout: none;
         }
 
         /* Music Toggle UI */
@@ -82,6 +100,12 @@
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
+        }
+
+        /* #13: LOADING SPINNER ANIMATION */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         header {
@@ -245,7 +269,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* Hit Doofy Section */
+        /* #13: HIT DOOFY SECTION WITH LOADING STATE */
         #gif-display-area {
             width: 250px;
             height: 250px;
@@ -256,6 +280,7 @@
             background: rgba(0, 0, 0, 0.2);
             border-radius: 20px;
             overflow: hidden;
+            position: relative;
         }
 
         #doofy-gif {
@@ -263,6 +288,24 @@
             max-height: 100%;
             display: none;
             object-fit: contain;
+        }
+
+        #gif-placeholder {
+            font-size: 5rem;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #gif-placeholder.loading {
+            animation: spin 1s linear infinite;
+        }
+
+        #gif-placeholder.error {
+            font-size: 3rem;
+            color: var(--love-red);
         }
 
         /* Scrapbook/Miss You Section */
@@ -435,7 +478,7 @@
     <canvas id="canvas-bg"></canvas>
 
     <!-- Music Control -->
-    <div id="music-control" onclick="toggleMusic()">
+    <div id="music-control" onclick="toggleMusic()" role="button" aria-label="Toggle music" tabindex="0">
         <span id="music-status-text">Click to Play Music 🎵</span>
         <div class="music-bars">
             <div class="bar" style="animation-delay: 0.1s"></div>
@@ -466,9 +509,9 @@
             <div class="letter-content">
                 Hey beautiful,
 
-                I’m writing this because I don’t know how else to tell you how much I regret making you feel this way. Seeing you upset is the last thing I ever want, and the silence right now is the loudest thing in the world. 
+                I'm writing this because I don't know how else to tell you how much I regret making you feel this way. Seeing you upset is the last thing I ever want, and the silence right now is killing me.
 
-                I understand that you don't feel like talking to me right now. I respect that space, but I wanted you to know that I'm right here whenever you're ready. I miss your voice, I miss your laugh, and I miss "us."
+                I understand that you don't feel like talking to me right now. I respect that space, but I wanted you to know that I'm right here whenever you're ready. I miss your voice, I miss your laugh.
 
                 You're the most important person to me. I'm so sorry.
             </div>
@@ -482,7 +525,7 @@
             <p style="opacity: 0.8; margin-top: 10px;">If you're still really frustrated, you can take it out on Doofy. He's a tough raccoon and he knows he messed up.</p>
             
             <div id="gif-display-area">
-                <span id="gif-placeholder" style="font-size: 5rem; opacity: 0.5;">🦝</span>
+                <div id="gif-placeholder" style="font-size: 5rem; opacity: 0.5;">🦝</div>
                 <img id="doofy-gif" src="" alt="Doofy Reaction">
             </div>
 
@@ -493,13 +536,13 @@
     <!-- 3. The Empty Bin Scrapbook -->
     <section class="section-container" id="scrapbook-section">
         <h2 style="font-family: 'Fredoka One'; font-size: 2.5rem; margin-bottom: 20px; text-align: center;">The Empty Bin 🏚️</h2>
-        <p style="opacity: 0.7; max-width: 600px; text-align: center; margin-bottom: 40px;">Without you around, things just don't feel right. Here are the pieces of my day that feel broken without you...</p>
+        <p style="opacity: 0.7; max-width: 600px; text-align: center; margin-bottom: 40px;">Without you around, things just don't feel right. Here are the pieces of my day that feel broken without you.</p>
         
         <div class="miss-you-grid">
             <div class="polaroid">
                 <div class="tape"></div>
                 <div class="polaroid-img-box">
-                    <img src="memories.jpeg" alt="Your Magic" onerror="this.parentElement.innerHTML='✨'">
+                    <img src="memories.jpeg" alt="Your Magic" loading="lazy" onerror="this.parentElement.innerHTML='✨'">
                 </div>
                 <div class="polaroid-caption">Your Magic.</div>
                 <p class="polaroid-detail">The world is gray and boring when you're not smiling at me. You have this way of making everything better just by being there.</p>
@@ -508,7 +551,7 @@
             <div class="polaroid">
                 <div class="tape"></div>
                 <div class="polaroid-img-box">
-                    <img src="texting.jpeg" alt="Our 3 AM talk" onerror="this.parentElement.innerHTML='💬'">
+                    <img src="texting.jpeg" alt="Our 3 AM talk" loading="lazy" onerror="this.parentElement.innerHTML='💬'">
                 </div>
                 <div class="polaroid-caption">Our 3 AM talk.</div>
                 <p class="polaroid-detail">I keep looking at my phone wanting to tell you something funny, then I remember. The silence is the hardest part of being a lonely raccoon.</p>
@@ -517,7 +560,7 @@
             <div class="polaroid">
                 <div class="tape"></div>
                 <div class="polaroid-img-box">
-                    <img src="peace.jpeg" alt="My safe space" onerror="this.parentElement.innerHTML='🫂'">
+                    <img src="peace.jpeg" alt="My safe space" loading="lazy" onerror="this.parentElement.innerHTML='🫂'">
                 </div>
                 <div class="polaroid-caption">My safe space.</div>
                 <p class="polaroid-detail">You're the person I run to when I'm stressed. Now that I'm the one who hurt you, I feel completely lost. I'm so sorry, Quackers.</p>
@@ -528,20 +571,20 @@
     <!-- 4. Repairing the Heart -->
     <section class="section-container" id="repair-section">
         <div class="card" style="border: 2px solid rgba(255, 89, 94, 0.3);">
-            <h2 id="gauge-title" style="font-family: 'Fredoka One'; font-size: 2.5rem; background: linear-gradient(to bottom, #fff, #ff9a9e); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Repairing the Heart</h2>
-            <p id="gauge-subtitle" style="opacity: 0.8; margin-top: 10px; font-weight: 600; max-width: 700px; margin-left: auto; margin-right: auto;">I know words aren't always enough. This is my way of showing you that I'm committed to fixing the hurt I caused. One click at a time, I hope to earn back a place in your heart. ❤️</p>
+            <h2 id="gauge-title" style="font-family: 'Fredoka One'; font-size: 2.5rem; background: linear-gradient(to bottom, #fff, #ff9a9e); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Healing Our Connection</h2>
+            <p id="gauge-subtitle" style="opacity: 0.8; margin-top: 10px; font-weight: 600; max-width: 700px; margin-left: auto; margin-right: auto;">I know words aren't always enough. This represents how much I want to make things right.</p>
             
             <div class="meter-wrapper">
                 <div class="meter-icon" id="meter-emoji">🩹</div>
                 <div class="meter-container">
                     <div id="forgiveness-fill"></div>
                 </div>
-                <div class="meter-milestone" id="meter-text">Waiting for a sign... ☁️</div>
+                <div class="meter-milestone" id="meter-text" aria-live="polite" aria-atomic="true">Waiting for a sign... ☁️</div>
             </div>
 
             <div class="btn-group" id="btn-group">
-                <button id="forgive-btn" class="btn" onclick="increaseForgiveness(event)">A Tiny Step Toward Us ✨</button>
-                <button id="run-away-btn" class="btn" onmouseover="dodge()">Still Too Hurt 💔</button>
+                <button id="forgive-btn" class="btn" onclick="increaseForgiveness(event)" aria-label="I forgive you">A Tiny Step Toward Us ✨</button>
+                <button id="run-away-btn" class="btn" onmouseover="dodge()" aria-label="I'm still hurt">Still Too Hurt 💔</button>
             </div>
         </div>
     </section>
@@ -550,8 +593,8 @@
         <div class="heart-rain" id="heart-rain"></div>
         <div class="final-apology-box">
             <h2>I'm Truly Sorry</h2>
-            <p>I know I’ve messed up real bad this time. There are no excuses for what happened, and I’m not going to try to make any. I took your feelings for granted, and I hate that I made you feel unheard or hurt. That’s on me, and I take full responsibility for it.</p>
-            <p>To be honest, I am real sad without you. This silence is killing me because you are the person I share everything with. Every time I see something funny or think of a random thought, my first instinct is to tell you—and then I remember you're mad at me, and it hits me all over again how much I miss you.</p>
+            <p>I know I've messed up real bad this time. There are no excuses for what happened, and I'm not going to try to make any. I took your feelings for granted, and I hate that I made you feel this way.</p>
+            <p>To be honest, I am real sad without you. This silence is killing me because you are the person I share everything with. Every time I see something funny or think of a random thought, I want to tell you.</p>
             <p>I love you so much. I'm sorry for being a silly raccoon. I'll be here waiting whenever you're ready to talk. No pressure, just wanted you to know how much you mean to me.</p>
             
             <div class="final-btns">
@@ -573,7 +616,7 @@
         // Register ScrollTrigger
         gsap.registerPlugin(ScrollTrigger);
 
-        // --- MUSIC ENGINE ---
+        // --- #12: MUSIC ENGINE WITH ERROR HANDLING ---
         const audioTracks = {
             main: new Audio('stand.mp3'),
             vent: new Audio('fool.mp3'),
@@ -581,10 +624,13 @@
             love: new Audio('Love.mp3')
         };
 
-        // Preload and Loop settings
-        Object.values(audioTracks).forEach(track => {
+        // Preload and Loop settings with error handling
+        Object.entries(audioTracks).forEach(([key, track]) => {
             track.loop = true;
-            track.volume = 0; 
+            track.volume = 0;
+            track.onerror = () => console.warn(`⚠️ Failed to load ${key} audio`);
+            track.onloadedmetadata = () => console.log(`✓ ${key} audio loaded`);
+            track.crossOrigin = "anonymous";
         });
 
         let currentTrack = 'main';
@@ -595,22 +641,19 @@
             attemptAutoplay();
         });
 
-        // Browsers require interaction, so we try on load and if it fails, the first click anywhere will trigger it
         function attemptAutoplay() {
             const active = audioTracks['main'];
             active.play().then(() => {
-                // Autoplay successful
                 isMusicEnabled = true;
                 updateMusicUI(true);
                 gsap.to(active, { volume: 0.5, duration: 2 });
             }).catch(error => {
-                // Autoplay blocked by browser policy
-                console.log("Autoplay blocked. Waiting for interaction.");
+                console.log("ℹ️ Autoplay blocked. Waiting for interaction.");
                 updateMusicUI(false);
             });
         }
 
-        // Global click listener to start audio if blocked (one-time)
+        // Global click listener to start audio if blocked
         const startOnInteraction = () => {
             if (!isMusicEnabled) {
                 toggleMusic();
@@ -642,13 +685,11 @@
 
             if (!isMusicEnabled) return;
 
-            // Fade out old
             if (oldTrack) {
                 gsap.to(oldTrack, { volume: 0, duration: 2, onComplete: () => oldTrack.pause() });
             }
 
-            // Fade in new
-            newTrack.play();
+            newTrack.play().catch(e => console.warn(`Error playing ${newTrackKey}:`, e));
             gsap.to(newTrack, { volume: 0.5, duration: 2 });
         }
 
@@ -657,7 +698,7 @@
                 isMusicEnabled = true;
                 updateMusicUI(true);
                 const active = audioTracks[currentTrack];
-                active.play();
+                active.play().catch(e => console.warn('Playback error:', e));
                 gsap.to(active, { volume: 0.5, duration: 1 });
             } else {
                 isMusicEnabled = false;
@@ -840,12 +881,35 @@
             window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(subject)}`, '_blank');
         }
 
+        // --- #13: HIT DOOFY WITH LOADING STATE & ERROR HANDLING ---
         function hitDoofy(e) {
             const img = document.getElementById('doofy-gif');
-            document.getElementById('gif-placeholder').style.display = 'none';
-            img.src = gifs[Math.floor(Math.random() * gifs.length)];
-            img.style.display = 'block';
-            createFloatingText(e.clientX, e.clientY, "I deserve it 🥺");
+            const placeholder = document.getElementById('gif-placeholder');
+            
+            // Show loading state
+            placeholder.innerText = '⏳';
+            placeholder.classList.add('loading');
+            placeholder.classList.remove('error');
+            placeholder.style.display = 'flex';
+            
+            const gifUrl = gifs[Math.floor(Math.random() * gifs.length)];
+            img.src = gifUrl;
+            
+            // Handle load success
+            img.onload = () => {
+                placeholder.classList.remove('loading');
+                placeholder.style.display = 'none';
+                img.style.display = 'block';
+                createFloatingText(e.clientX, e.clientY, "I deserve it 🥺");
+            };
+            
+            // Handle load error
+            img.onerror = () => {
+                placeholder.innerText = '😢';
+                placeholder.classList.remove('loading');
+                placeholder.classList.add('error');
+                console.warn('Failed to load GIF:', gifUrl);
+            };
         }
 
         const gifs = [
@@ -864,9 +928,16 @@
             gsap.to(el, { y: -80, opacity: 0, duration: duration, onComplete: () => el.remove() });
         }
 
+        // --- #2: FIX MEMORY LEAK IN startHeartRain ---
+        let heartRainInterval = null;
+
         function startHeartRain() {
             const container = document.getElementById('heart-rain');
-            setInterval(() => {
+            
+            // Clear any existing interval before starting new one
+            if (heartRainInterval) clearInterval(heartRainInterval);
+            
+            heartRainInterval = setInterval(() => {
                 const h = document.createElement('div');
                 h.innerText = '❤️';
                 h.style.position = 'absolute';
@@ -876,6 +947,31 @@
                 gsap.to(h, { y: window.innerHeight + 100, duration: 2, onComplete: () => h.remove() });
             }, 100);
         }
+
+        // Stop heart rain function
+        function stopHeartRain() {
+            if (heartRainInterval) {
+                clearInterval(heartRainInterval);
+                heartRainInterval = null;
+            }
+        }
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            stopHeartRain();
+        });
+
+        // Stop heart rain after 30 seconds to prevent memory buildup
+        function autoStopHeartRain() {
+            setTimeout(() => stopHeartRain(), 30000);
+        }
+
+        // Override startHeartRain to auto-stop
+        const originalStartHeartRain = startHeartRain;
+        window.startHeartRain = function() {
+            originalStartHeartRain();
+            autoStopHeartRain();
+        };
     </script>
 </body>
 </html>
