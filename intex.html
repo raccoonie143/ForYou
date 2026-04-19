@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Favorite Duck 🦆</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@300;400;600;700&family=Caveat:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --pond-blue: #a2d2ff;
+            --pond-dark: #4895ef;
+            --raccoon-grey: #4a4e69;
+            --duck-yellow: #ffca3a;
+            --grass-green: #90be6d;
+            --love-red: #ff595e;
+            --soft-white: #f8f9fa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #0b132b;
+            color: #fff;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            cursor: crosshair;
+        }
+
+        /* Music Toggle UI */
+        #music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        #music-control:hover { background: rgba(255, 255, 255, 0.2); }
+        .music-bars { display: flex; align-items: flex-end; gap: 2px; height: 15px; }
+        .bar { width: 3px; background: var(--duck-yellow); height: 100%; transition: height 0.2s ease; }
+        .playing .bar { animation: bar-dance 1s infinite alternate; }
+        @keyframes bar-dance { 
+            0% { height: 30%; } 
+            100% { height: 100%; }
+        }
+
+        /* Particles Background */
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1b263b 0%, #0b132b 100%);
+            transition: background 1s ease;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(3deg); }
+        }
+
+        @keyframes pulse-heart {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            perspective: 1000px;
+        }
+
+        .hero-graphics {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .duck-main {
+            font-size: 8rem;
+            display: inline-block;
+            animation: float 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(255, 202, 58, 0.5));
+            will-change: transform;
+        }
+
+        .raccoon-main {
+            font-size: 6rem;
+            position: absolute;
+            bottom: -20px;
+            right: -40px;
+            animation: float 5s ease-in-out infinite reverse;
+            filter: drop-shadow(0 0 20px rgba(74, 78, 105, 0.5));
+            will-change: transform;
+        }
+
+        h1 {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            background: linear-gradient(to right, var(--duck-yellow), #fff, var(--pond-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .section-container {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 100px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            padding: 50px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            text-align: center;
+        }
+
+        .letter-content {
+            text-align: left;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.9);
+            white-space: pre-line;
+        }
+
+        /* The Interactive Meter */
+        .meter-wrapper {
+            position: relative;
+            margin: 60px 0 40px;
+        }
+
+        .meter-icon {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .meter-container {
+            width: 100%;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 25px;
+            padding: 6px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        #forgiveness-fill {
+            height: 100%;
+            width: 5%;
+            background: linear-gradient(90deg, #ff9a9e, #fad0c4, #ff595e);
+            border-radius: 20px;
+            transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 30px rgba(255, 89, 94, 0.6);
+            position: relative;
+        }
+
+        .meter-milestone {
+            margin-top: 15px;
+            font-weight: 700;
+            color: var(--love-red);
+            font-size: 1.1rem;
+            min-height: 1.5em;
+        }
+
+        .btn-group {
+            position: relative;
+            min-height: 200px; 
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn {
+            font-family: 'Fredoka One', cursive;
+            padding: 18px 40px;
+            border-radius: 100px;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            white-space: nowrap;
+        }
+
+        #forgive-btn {
+            background: linear-gradient(135deg, #ff595e, #ff924c);
+            color: white;
+            animation: pulse-heart 2s infinite ease-in-out;
+        }
+
+        #run-away-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Hit Doofy Section */
+        #gif-display-area {
+            width: 250px;
+            height: 250px;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        #doofy-gif {
+            max-width: 100%;
+            max-height: 100%;
+            display: none;
+            object-fit: contain;
+        }
+
+        /* Scrapbook/Miss You Section */
+        .miss-you-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 50px;
+            width: 100%;
+        }
+
+        .polaroid {
+            background: white;
+            padding: 20px 20px 60px 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            color: #333;
+            text-align: left;
+            position: relative;
+            opacity: 0;
+            transform: scale(0.8) translateY(30px);
+        }
+
+        .polaroid:hover {
+            transform: scale(1.05) !important;
+            z-index: 10;
+        }
+
+        .polaroid-img-box {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: #f0f0f0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+
+        .polaroid-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .polaroid-caption {
+            font-family: 'Caveat', cursive;
+            font-size: 1.8rem;
+            color: #222;
+            line-height: 1.1;
+        }
+
+        .polaroid-detail {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .tape {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Final Message/Letter */
+        #victory-message {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #0b132b;
+            z-index: 999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(25px);
+            padding: 40px 20px;
+            overflow-y: auto;
+        }
+
+        .final-apology-box {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            border-radius: 30px;
+            max-width: 700px;
+            text-align: left;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .final-apology-box h2 {
+            font-family: 'Fredoka One';
+            color: var(--duck-yellow);
+            margin-bottom: 25px;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .final-apology-box p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            color: #eee;
+        }
+
+        .feedback-text {
+            position: fixed;
+            pointer-events: none;
+            font-family: 'Fredoka One';
+            z-index: 1000;
+            color: var(--duck-yellow);
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            width: max-content;
+            text-align: center;
+        }
+
+        .status-badge {
+            background: rgba(255, 89, 94, 0.2);
+            color: var(--love-red);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .final-btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .interaction-note {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            opacity: 0.6;
+            text-align: center;
+        }
+
+        /* Scroll Progress Bar */
+        #progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            z-index: 1000;
+        }
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--duck-yellow), var(--love-red));
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-container"><div id="progress-bar"></div></div>
+    <canvas id="canvas-bg"></canvas>
+
+    <!-- Music Control -->
+    <div id="music-control" onclick="toggleMusic()">
+        <span id="music-status-text">Click to Play Music 🎵</span>
+        <div class="music-bars">
+            <div class="bar" style="animation-delay: 0.1s"></div>
+            <div class="bar" style="animation-delay: 0.3s"></div>
+            <div class="bar" style="animation-delay: 0.2s"></div>
+            <div class="bar" style="animation-delay: 0.4s"></div>
+        </div>
+    </div>
+
+    <header>
+        <div class="hero-graphics">
+            <span class="duck-main">🦆</span>
+            <span class="raccoon-main">🦝</span>
+        </div>
+        <div class="status-badge">Current Status: Raccoon Missing His Duck</div>
+        <h1 id="main-title">I miss you, Quackers.</h1>
+        <p class="subtitle">I know you're mad, and I completely understand why. I'm just sitting here in my raccoon bin feeling very empty without my favorite duck to talk to.</p>
+        <div style="margin-top: 40px; opacity: 0.5; animation: bounce 2s infinite;">
+            <p>I wrote a few things for you below...</p>
+            <span>↓</span>
+        </div>
+    </header>
+
+    <!-- 1. The Sincere Letter -->
+    <section class="section-container" id="letter-section">
+        <div class="card">
+            <h2 style="font-family: 'Fredoka One'; font-size: 2rem; margin-bottom: 30px; color: var(--duck-yellow);">A Note From My Heart</h2>
+            <div class="letter-content">
+                Hey beautiful,
+
+                I’m writing this because I don’t know how else to tell you how much I regret making you feel this way. Seeing you upset is the last thing I ever want, and the silence right now is the loudest thing in the world. 
+
+                I understand that you don't feel like talking to me right now. I respect that space, but I wanted you to know that I'm right here whenever you're ready. I miss your voice, I miss your laugh, and I miss "us."
+
+                You're the most important person to me. I'm so sorry.
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. Need to Vent Section -->
+    <section class="section-container" id="vent-section">
+        <div class="card">
+            <h2 style="font-family: 'Fredoka One'; font-size: 2.5rem;">Need to vent?</h2>
+            <p style="opacity: 0.8; margin-top: 10px;">If you're still really frustrated, you can take it out on Doofy. He's a tough raccoon and he knows he messed up.</p>
+            
+            <div id="gif-display-area">
+                <span id="gif-placeholder" style="font-size: 5rem; opacity: 0.5;">🦝</span>
+                <img id="doofy-gif" src="" alt="Doofy Reaction">
+            </div>
+
+            <button id="hit-btn" class="btn" style="background: var(--love-red); color: white;" onclick="hitDoofy(event)">Hit Doofy 👊</button>
+        </div>
+    </section>
+
+    <!-- 3. The Empty Bin Scrapbook -->
+    <section class="section-container" id="scrapbook-section">
+        <h2 style="font-family: 'Fredoka One'; font-size: 2.5rem; margin-bottom: 20px; text-align: center;">The Empty Bin 🏚️</h2>
+        <p style="opacity: 0.7; max-width: 600px; text-align: center; margin-bottom: 40px;">Without you around, things just don't feel right. Here are the pieces of my day that feel broken without you...</p>
+        
+        <div class="miss-you-grid">
+            <div class="polaroid">
+                <div class="tape"></div>
+                <div class="polaroid-img-box">
+                    <img src="memories.jpeg" alt="Your Magic" onerror="this.parentElement.innerHTML='✨'">
+                </div>
+                <div class="polaroid-caption">Your Magic.</div>
+                <p class="polaroid-detail">The world is gray and boring when you're not smiling at me. You have this way of making everything better just by being there.</p>
+            </div>
+            
+            <div class="polaroid">
+                <div class="tape"></div>
+                <div class="polaroid-img-box">
+                    <img src="texting.jpeg" alt="Our 3 AM talk" onerror="this.parentElement.innerHTML='💬'">
+                </div>
+                <div class="polaroid-caption">Our 3 AM talk.</div>
+                <p class="polaroid-detail">I keep looking at my phone wanting to tell you something funny, then I remember. The silence is the hardest part of being a lonely raccoon.</p>
+            </div>
+            
+            <div class="polaroid">
+                <div class="tape"></div>
+                <div class="polaroid-img-box">
+                    <img src="peace.jpeg" alt="My safe space" onerror="this.parentElement.innerHTML='🫂'">
+                </div>
+                <div class="polaroid-caption">My safe space.</div>
+                <p class="polaroid-detail">You're the person I run to when I'm stressed. Now that I'm the one who hurt you, I feel completely lost. I'm so sorry, Quackers.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Repairing the Heart -->
+    <section class="section-container" id="repair-section">
+        <div class="card" style="border: 2px solid rgba(255, 89, 94, 0.3);">
+            <h2 id="gauge-title" style="font-family: 'Fredoka One'; font-size: 2.5rem; background: linear-gradient(to bottom, #fff, #ff9a9e); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Repairing the Heart</h2>
+            <p id="gauge-subtitle" style="opacity: 0.8; margin-top: 10px; font-weight: 600; max-width: 700px; margin-left: auto; margin-right: auto;">I know words aren't always enough. This is my way of showing you that I'm committed to fixing the hurt I caused. One click at a time, I hope to earn back a place in your heart. ❤️</p>
+            
+            <div class="meter-wrapper">
+                <div class="meter-icon" id="meter-emoji">🩹</div>
+                <div class="meter-container">
+                    <div id="forgiveness-fill"></div>
+                </div>
+                <div class="meter-milestone" id="meter-text">Waiting for a sign... ☁️</div>
+            </div>
+
+            <div class="btn-group" id="btn-group">
+                <button id="forgive-btn" class="btn" onclick="increaseForgiveness(event)">A Tiny Step Toward Us ✨</button>
+                <button id="run-away-btn" class="btn" onmouseover="dodge()">Still Too Hurt 💔</button>
+            </div>
+        </div>
+    </section>
+
+    <div id="victory-message">
+        <div class="heart-rain" id="heart-rain"></div>
+        <div class="final-apology-box">
+            <h2>I'm Truly Sorry</h2>
+            <p>I know I’ve messed up real bad this time. There are no excuses for what happened, and I’m not going to try to make any. I took your feelings for granted, and I hate that I made you feel unheard or hurt. That’s on me, and I take full responsibility for it.</p>
+            <p>To be honest, I am real sad without you. This silence is killing me because you are the person I share everything with. Every time I see something funny or think of a random thought, my first instinct is to tell you—and then I remember you're mad at me, and it hits me all over again how much I miss you.</p>
+            <p>I love you so much. I'm sorry for being a silly raccoon. I'll be here waiting whenever you're ready to talk. No pressure, just wanted you to know how much you mean to me.</p>
+            
+            <div class="final-btns">
+                <button class="btn" style="background: var(--duck-yellow); color: #000;" onclick="handleThankYou(event)">Thank You 😊</button>
+                <button class="btn" style="background: #ea4335; color: #fff;" onclick="sendEmail()">Send an Email ✉️</button>
+            </div>
+            
+            <p class="interaction-note">
+                Note: "Thank You" will show a small message. "Send an Email" will open Gmail to message me directly.
+            </p>
+        </div>
+    </div>
+
+    <footer style="padding: 100px 20px; text-align: center; opacity: 0.4;">
+        <p>I really, really miss you. - Your Raccoon</p>
+    </footer>
+
+    <script>
+        // Register ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- MUSIC ENGINE ---
+        const audioTracks = {
+            main: new Audio('stand.mp3'),
+            vent: new Audio('fool.mp3'),
+            bin: new Audio('loof.mp3'),
+            love: new Audio('Love.mp3')
+        };
+
+        // Preload and Loop settings
+        Object.values(audioTracks).forEach(track => {
+            track.loop = true;
+            track.volume = 0; 
+        });
+
+        let currentTrack = 'main';
+        let isMusicEnabled = false;
+
+        // Auto-play attempt on load
+        window.addEventListener('load', () => {
+            attemptAutoplay();
+        });
+
+        // Browsers require interaction, so we try on load and if it fails, the first click anywhere will trigger it
+        function attemptAutoplay() {
+            const active = audioTracks['main'];
+            active.play().then(() => {
+                // Autoplay successful
+                isMusicEnabled = true;
+                updateMusicUI(true);
+                gsap.to(active, { volume: 0.5, duration: 2 });
+            }).catch(error => {
+                // Autoplay blocked by browser policy
+                console.log("Autoplay blocked. Waiting for interaction.");
+                updateMusicUI(false);
+            });
+        }
+
+        // Global click listener to start audio if blocked (one-time)
+        const startOnInteraction = () => {
+            if (!isMusicEnabled) {
+                toggleMusic();
+            }
+            window.removeEventListener('click', startOnInteraction);
+            window.removeEventListener('touchstart', startOnInteraction);
+        };
+        window.addEventListener('click', startOnInteraction);
+        window.addEventListener('touchstart', startOnInteraction);
+
+        function updateMusicUI(playing) {
+            const control = document.getElementById('music-control');
+            const statusText = document.getElementById('music-status-text');
+            if (playing) {
+                control.classList.add('playing');
+                statusText.innerText = "Music On";
+            } else {
+                control.classList.remove('playing');
+                statusText.innerText = "Click to Play Music 🎵";
+            }
+        }
+
+        function crossfade(newTrackKey) {
+            if (currentTrack === newTrackKey) return;
+            
+            const oldTrack = audioTracks[currentTrack];
+            const newTrack = audioTracks[newTrackKey];
+            currentTrack = newTrackKey;
+
+            if (!isMusicEnabled) return;
+
+            // Fade out old
+            if (oldTrack) {
+                gsap.to(oldTrack, { volume: 0, duration: 2, onComplete: () => oldTrack.pause() });
+            }
+
+            // Fade in new
+            newTrack.play();
+            gsap.to(newTrack, { volume: 0.5, duration: 2 });
+        }
+
+        function toggleMusic() {
+            if (!isMusicEnabled) {
+                isMusicEnabled = true;
+                updateMusicUI(true);
+                const active = audioTracks[currentTrack];
+                active.play();
+                gsap.to(active, { volume: 0.5, duration: 1 });
+            } else {
+                isMusicEnabled = false;
+                updateMusicUI(false);
+                Object.values(audioTracks).forEach(t => {
+                    gsap.to(t, { volume: 0, duration: 1, onComplete: () => t.pause() });
+                });
+            }
+        }
+
+        // --- BACKGROUND ---
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.5;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+            }
+            draw() {
+                ctx.fillStyle = `rgba(162, 210, 255, ${this.opacity})`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+        for (let i = 0; i < 100; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // --- DYNAMIC SCROLLING EFFECTS ---
+
+        // 1. Scroll Progress
+        gsap.to("#progress-bar", {
+            width: "100%",
+            ease: "none",
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 0.3
+            }
+        });
+
+        // 2. Hero Parallax
+        gsap.to(".duck-main", {
+            y: 200,
+            opacity: 0,
+            scale: 0.5,
+            scrollTrigger: {
+                trigger: "header",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            }
+        });
+
+        // 3. Music Triggers
+        ScrollTrigger.create({
+            trigger: "#vent-section",
+            start: "top center",
+            onEnter: () => crossfade('vent'),
+            onLeaveBack: () => crossfade('main')
+        });
+
+        ScrollTrigger.create({
+            trigger: "#scrapbook-section",
+            start: "top center",
+            onEnter: () => crossfade('bin'),
+            onLeaveBack: () => crossfade('vent')
+        });
+
+        // Section Fade-ins
+        gsap.utils.toArray(".section-container").forEach(section => {
+            gsap.to(section, {
+                opacity: 1,
+                y: 0,
+                duration: 1.2,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 85%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+        });
+
+        // Polaroid Staggered Reveal
+        gsap.to(".polaroid", {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 1,
+            stagger: 0.2,
+            ease: "back.out(1.7)",
+            scrollTrigger: {
+                trigger: ".miss-you-grid",
+                start: "top 80%"
+            }
+        });
+
+        // --- DODGE MECHANIC ---
+        let firstDodge = true;
+        const dodgeTexts = ["Still Too Hurt 💔", "Not ready yet...", "It hurts too much.", "I need more time.", "The bin is empty.", "Silence is safer.", "Wait...", "I'm still sad. 🌧️"];
+
+        function dodge() {
+            const btn = document.getElementById('run-away-btn');
+            const group = document.getElementById('btn-group');
+            const groupRect = group.getBoundingClientRect();
+            
+            if (firstDodge) {
+                btn.style.position = 'absolute';
+                firstDodge = false;
+            }
+            btn.innerText = dodgeTexts[Math.floor(Math.random() * dodgeTexts.length)];
+            let newX = (Math.random() - 0.5) * (groupRect.width - 150);
+            let newY = (Math.random() - 0.5) * (groupRect.height - 100);
+            gsap.to(btn, { x: newX, y: newY, rotation: (Math.random() - 0.5) * 20, duration: 0.3, ease: "elastic.out(1, 0.6)" });
+        }
+
+        // --- FORGIVENESS ---
+        let forgiveness = 5;
+        const fill = document.getElementById('forgiveness-fill');
+        const victory = document.getElementById('victory-message');
+        const meterEmoji = document.getElementById('meter-emoji');
+        const meterText = document.getElementById('meter-text');
+        
+        const milestones = [
+            { limit: 20, emoji: "🩹", text: "Trying to mend the first few cracks... 🩹" },
+            { limit: 40, emoji: "🌱", text: "Planting the seeds of a better 'us'... 🌱" },
+            { limit: 60, emoji: "🕯️", text: "Finding the light in the dark again... 🕯️" },
+            { limit: 80, emoji: "💖", text: "I'll never take your feelings for granted again. 💖" },
+            { limit: 100, emoji: "✨", text: "CONNECTION HEALED. I love you, Quackers. ✨" }
+        ];
+
+        function increaseForgiveness(e) {
+            if (forgiveness < 100) {
+                forgiveness += 15;
+                if (forgiveness > 100) forgiveness = 100;
+                fill.style.width = forgiveness + '%';
+                const milestone = milestones.find(m => forgiveness <= m.limit) || milestones[milestones.length - 1];
+                meterEmoji.innerText = milestone.emoji;
+                meterText.innerText = milestone.text;
+                createFloatingText(e.clientX, e.clientY, "Mending... ❤️");
+                
+                if (forgiveness >= 100) {
+                    setTimeout(() => {
+                        victory.style.display = 'flex';
+                        crossfade('love'); 
+                        gsap.from(".final-apology-box", { scale: 0.8, opacity: 0, duration: 0.8 });
+                        startHeartRain();
+                    }, 800);
+                }
+            }
+        }
+
+        function handleThankYou(e) {
+            createFloatingText(e.clientX, e.clientY, "Thank you for listening to my heart ❤️", 2.5);
+        }
+
+        function sendEmail() {
+            const email = 'deport.conor@gmail.com';
+            const subject = 'Regarding the silly raccoon...';
+            window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(subject)}`, '_blank');
+        }
+
+        function hitDoofy(e) {
+            const img = document.getElementById('doofy-gif');
+            document.getElementById('gif-placeholder').style.display = 'none';
+            img.src = gifs[Math.floor(Math.random() * gifs.length)];
+            img.style.display = 'block';
+            createFloatingText(e.clientX, e.clientY, "I deserve it 🥺");
+        }
+
+        const gifs = [
+            "https://media.tenor.com/TLPLeyipKPgAAAAj/bear.gif",
+            "https://media.tenor.com/4l5NsL-5LZcAAAAj/tkthao219-bubududu.gif",
+            "https://media.tenor.com/pZR1wz2VO9AAAAAj/bubududu-panda.gif"
+        ];
+
+        function createFloatingText(x, y, text, duration = 1) {
+            const el = document.createElement('div');
+            el.className = 'feedback-text';
+            el.innerText = text;
+            el.style.left = (x - 100) + 'px'; 
+            el.style.top = y + 'px';
+            document.body.appendChild(el);
+            gsap.to(el, { y: -80, opacity: 0, duration: duration, onComplete: () => el.remove() });
+        }
+
+        function startHeartRain() {
+            const container = document.getElementById('heart-rain');
+            setInterval(() => {
+                const h = document.createElement('div');
+                h.innerText = '❤️';
+                h.style.position = 'absolute';
+                h.style.left = Math.random() * 100 + 'vw';
+                h.style.top = '-50px';
+                container.appendChild(h);
+                gsap.to(h, { y: window.innerHeight + 100, duration: 2, onComplete: () => h.remove() });
+            }, 100);
+        }
+    </script>
+</body>
+</html>
