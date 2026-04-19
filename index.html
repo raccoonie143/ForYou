@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>For My Favorite Duck 🦆</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@300;400;600;700&family=Caveat:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -18,7 +20,12 @@
             --soft-white: #f8f9fa;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body {
             font-family: 'Quicksand', sans-serif;
@@ -27,16 +34,19 @@
             overflow-x: hidden;
             scroll-behavior: smooth;
             cursor: crosshair;
+            width: 100%;
+            position: relative;
         }
 
         /* Music Toggle UI */
         #music-control {
             position: fixed;
-            bottom: 20px;
+            bottom: max(20px, env(safe-area-inset-bottom));
             right: 20px;
             z-index: 2000;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 10px 15px;
             border-radius: 50px;
@@ -45,6 +55,7 @@
             align-items: center;
             gap: 10px;
             transition: all 0.3s ease;
+            touch-action: manipulation;
         }
         #music-control:hover { background: rgba(255, 255, 255, 0.2); }
         .music-bars { display: flex; align-items: flex-end; gap: 2px; height: 15px; }
@@ -85,13 +96,14 @@
         }
 
         header {
-            height: 100vh;
+            min-height: 100vh;
+            height: auto;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 20px;
+            padding: 80px 20px;
             perspective: 1000px;
         }
 
@@ -128,7 +140,7 @@
         }
 
         .subtitle {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: rgba(255, 255, 255, 0.8);
             max-width: 600px;
             line-height: 1.6;
@@ -140,19 +152,20 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 100px 20px;
+            padding: 60px 20px;
             max-width: 1000px;
             margin: 0 auto;
             opacity: 0;
-            transform: translateY(50px);
+            transform: translateY(30px);
         }
 
         .card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 40px;
-            padding: 50px;
+            padding: 40px 25px;
             width: 100%;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             position: relative;
@@ -161,7 +174,7 @@
 
         .letter-content {
             text-align: left;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             line-height: 1.8;
             color: rgba(255, 255, 255, 0.9);
             white-space: pre-line;
@@ -213,36 +226,50 @@
 
         .btn-group {
             position: relative;
-            min-height: 200px; 
+            min-height: 300px; 
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 20px;
+            flex-direction: column;
+            overflow: visible;
+        }
+
+        @media (min-width: 640px) {
+            .btn-group { min-height: 250px; }
         }
 
         .btn {
             font-family: 'Fredoka One', cursive;
-            padding: 18px 40px;
+            padding: 16px 32px;
             border-radius: 100px;
             border: none;
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            white-space: nowrap;
+            white-space: normal;
+            touch-action: manipulation;
         }
 
         #forgive-btn {
             background: linear-gradient(135deg, #ff595e, #ff924c);
             color: white;
             animation: pulse-heart 2s infinite ease-in-out;
+            width: 100%;
+            max-width: 300px;
+            z-index: 10;
         }
 
         #run-away-btn {
             background: rgba(255, 255, 255, 0.1);
             color: rgba(255, 255, 255, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+            max-width: 300px;
+            z-index: 5;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         /* Hit Doofy Section */
@@ -268,7 +295,7 @@
         /* Scrapbook/Miss You Section */
         .miss-you-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 40px;
             margin-top: 50px;
             width: 100%;
@@ -333,6 +360,7 @@
             height: 35px;
             background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
@@ -347,33 +375,36 @@
             justify-content: center;
             align-items: center;
             backdrop-filter: blur(25px);
-            padding: 40px 20px;
+            -webkit-backdrop-filter: blur(25px);
+            padding: 20px;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .final-apology-box {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 40px;
+            padding: 30px 20px;
             border-radius: 30px;
             max-width: 700px;
             text-align: left;
             position: relative;
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            margin: auto 0;
         }
 
         .final-apology-box h2 {
             font-family: 'Fredoka One';
             color: var(--duck-yellow);
-            margin-bottom: 25px;
-            font-size: 2rem;
+            margin-bottom: 20px;
+            font-size: 1.75rem;
             text-align: center;
         }
 
         .final-apology-box p {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 15px;
             color: #eee;
         }
 
@@ -393,22 +424,22 @@
             color: var(--love-red);
             padding: 5px 15px;
             border-radius: 20px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             margin-bottom: 20px;
             display: inline-block;
         }
 
         .final-btns {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
-            margin-top: 30px;
+            margin-top: 25px;
             flex-wrap: wrap;
         }
 
         .interaction-note {
             margin-top: 20px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             opacity: 0.6;
             text-align: center;
         }
@@ -419,7 +450,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 6px;
+            height: 4px;
             z-index: 1000;
         }
         #progress-bar {
@@ -462,7 +493,7 @@
     <!-- 1. The Sincere Letter -->
     <section class="section-container" id="letter-section">
         <div class="card">
-            <h2 style="font-family: 'Fredoka One'; font-size: 2rem; margin-bottom: 30px; color: var(--duck-yellow);">A Note From My Heart</h2>
+            <h2 style="font-family: 'Fredoka One'; font-size: 1.8rem; margin-bottom: 25px; color: var(--duck-yellow);">A Note From My Heart</h2>
             <div class="letter-content">
                 Hey beautiful,
 
@@ -478,7 +509,7 @@
     <!-- 2. Need to Vent Section -->
     <section class="section-container" id="vent-section">
         <div class="card">
-            <h2 style="font-family: 'Fredoka One'; font-size: 2.5rem;">Need to vent?</h2>
+            <h2 style="font-family: 'Fredoka One'; font-size: 2.2rem;">Need to vent?</h2>
             <p style="opacity: 0.8; margin-top: 10px;">If you're still really frustrated, you can take it out on Doofy. He's a tough raccoon and he knows he messed up.</p>
             
             <div id="gif-display-area">
@@ -486,13 +517,13 @@
                 <img id="doofy-gif" src="" alt="Doofy Reaction">
             </div>
 
-            <button id="hit-btn" class="btn" style="background: var(--love-red); color: white;" onclick="hitDoofy(event)">Hit Doofy 👊</button>
+            <button id="hit-btn" class="btn" style="background: var(--love-red); color: white; width: 100%; max-width: 250px;" onclick="hitDoofy(event)">Hit Doofy 👊</button>
         </div>
     </section>
 
     <!-- 3. The Empty Bin Scrapbook -->
     <section class="section-container" id="scrapbook-section">
-        <h2 style="font-family: 'Fredoka One'; font-size: 2.5rem; margin-bottom: 20px; text-align: center;">The Empty Bin 🏚️</h2>
+        <h2 style="font-family: 'Fredoka One'; font-size: 2.2rem; margin-bottom: 20px; text-align: center;">The Empty Bin 🏚️</h2>
         <p style="opacity: 0.7; max-width: 600px; text-align: center; margin-bottom: 40px;">Without you around, things just don't feel right. Here are the pieces of my day that feel broken without you...</p>
         
         <div class="miss-you-grid">
@@ -528,7 +559,7 @@
     <!-- 4. Repairing the Heart -->
     <section class="section-container" id="repair-section">
         <div class="card" style="border: 2px solid rgba(255, 89, 94, 0.3);">
-            <h2 id="gauge-title" style="font-family: 'Fredoka One'; font-size: 2.5rem; background: linear-gradient(to bottom, #fff, #ff9a9e); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Repairing the Heart</h2>
+            <h2 id="gauge-title" style="font-family: 'Fredoka One'; font-size: 2.2rem; background: linear-gradient(to bottom, #fff, #ff9a9e); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Repairing the Heart</h2>
             <p id="gauge-subtitle" style="opacity: 0.8; margin-top: 10px; font-weight: 600; max-width: 700px; margin-left: auto; margin-right: auto;">I know words aren't always enough. This is my way of showing you that I'm committed to fixing the hurt I caused. One click at a time, I hope to earn back a place in your heart. ❤️</p>
             
             <div class="meter-wrapper">
@@ -541,13 +572,13 @@
 
             <div class="btn-group" id="btn-group">
                 <button id="forgive-btn" class="btn" onclick="increaseForgiveness(event)">A Tiny Step Toward Us ✨</button>
-                <button id="run-away-btn" class="btn" onmouseover="dodge()">Still Too Hurt 💔</button>
+                <button id="run-away-btn" class="btn" onmouseover="dodge()" ontouchstart="dodge()" onclick="dodge()">Still Too Hurt 💔</button>
             </div>
         </div>
     </section>
 
     <div id="victory-message">
-        <div class="heart-rain" id="heart-rain"></div>
+        <div class="heart-rain" id="heart-rain" style="position: absolute; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: -1;"></div>
         <div class="final-apology-box">
             <h2>I'm Truly Sorry</h2>
             <p>I know I’ve messed up real bad this time. There are no excuses for what happened, and I’m not going to try to make any. I took your feelings for granted, and I hate that I made you feel unheard or hurt. That’s on me, and I take full responsibility for it.</p>
@@ -555,12 +586,12 @@
             <p>I love you so much. I'm sorry for being a silly raccoon. I'll be here waiting whenever you're ready to talk. No pressure, just wanted you to know how much you mean to me.</p>
             
             <div class="final-btns">
-                <button class="btn" style="background: var(--duck-yellow); color: #000;" onclick="handleThankYou(event)">Thank You 😊</button>
-                <button class="btn" style="background: #ea4335; color: #fff;" onclick="sendEmail()">Send an Email ✉️</button>
+                <button class="btn" style="background: var(--duck-yellow); color: #000; flex: 1; min-width: 140px;" onclick="handleThankYou(event)">Thank You 😊</button>
+                <button class="btn" style="background: #ea4335; color: #fff; flex: 1; min-width: 140px;" onclick="sendEmail()">Email Me ✉️</button>
             </div>
             
             <p class="interaction-note">
-                Note: "Thank You" will show a small message. "Send an Email" will open Gmail to message me directly.
+                Note: "Thank You" will show a small message. "Email Me" will open Gmail to message me directly.
             </p>
         </div>
     </div>
@@ -570,7 +601,6 @@
     </footer>
 
     <script>
-        // Register ScrollTrigger
         gsap.registerPlugin(ScrollTrigger);
 
         // --- MUSIC ENGINE ---
@@ -581,7 +611,6 @@
             love: new Audio('Love.mp3')
         };
 
-        // Preload and Loop settings
         Object.values(audioTracks).forEach(track => {
             track.loop = true;
             track.volume = 0; 
@@ -590,27 +619,21 @@
         let currentTrack = 'main';
         let isMusicEnabled = false;
 
-        // Auto-play attempt on load
         window.addEventListener('load', () => {
             attemptAutoplay();
         });
 
-        // Browsers require interaction, so we try on load and if it fails, the first click anywhere will trigger it
         function attemptAutoplay() {
             const active = audioTracks['main'];
             active.play().then(() => {
-                // Autoplay successful
                 isMusicEnabled = true;
                 updateMusicUI(true);
                 gsap.to(active, { volume: 0.5, duration: 2 });
             }).catch(error => {
-                // Autoplay blocked by browser policy
-                console.log("Autoplay blocked. Waiting for interaction.");
                 updateMusicUI(false);
             });
         }
 
-        // Global click listener to start audio if blocked (one-time)
         const startOnInteraction = () => {
             if (!isMusicEnabled) {
                 toggleMusic();
@@ -629,25 +652,17 @@
                 statusText.innerText = "Music On";
             } else {
                 control.classList.remove('playing');
-                statusText.innerText = "Click to Play Music 🎵";
+                statusText.innerText = "Tap for Music 🎵";
             }
         }
 
         function crossfade(newTrackKey) {
             if (currentTrack === newTrackKey) return;
-            
             const oldTrack = audioTracks[currentTrack];
             const newTrack = audioTracks[newTrackKey];
             currentTrack = newTrackKey;
-
             if (!isMusicEnabled) return;
-
-            // Fade out old
-            if (oldTrack) {
-                gsap.to(oldTrack, { volume: 0, duration: 2, onComplete: () => oldTrack.pause() });
-            }
-
-            // Fade in new
+            if (oldTrack) gsap.to(oldTrack, { volume: 0, duration: 2, onComplete: () => oldTrack.pause() });
             newTrack.play();
             gsap.to(newTrack, { volume: 0.5, duration: 2 });
         }
@@ -672,41 +687,47 @@
         const canvas = document.getElementById('canvas-bg');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        
+        function resize() { 
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = window.innerWidth * dpr; 
+            canvas.height = window.innerHeight * dpr; 
+            canvas.style.width = window.innerWidth + 'px';
+            canvas.style.height = window.innerHeight + 'px';
+            ctx.scale(dpr, dpr);
+        }
         window.addEventListener('resize', resize);
         resize();
 
         class Particle {
             constructor() { this.reset(); }
             reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
+                this.x = Math.random() * window.innerWidth;
+                this.y = Math.random() * window.innerHeight;
                 this.size = Math.random() * 2;
-                this.speedX = (Math.random() - 0.5) * 0.5;
-                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.speedY = (Math.random() - 0.5) * 0.4;
                 this.opacity = Math.random() * 0.5;
             }
             update() {
                 this.x += this.speedX; this.y += this.speedY;
-                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+                if (this.x < 0 || this.x > window.innerWidth || this.y < 0 || this.y > window.innerHeight) this.reset();
             }
             draw() {
                 ctx.fillStyle = `rgba(162, 210, 255, ${this.opacity})`;
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
             }
         }
-        for (let i = 0; i < 100; i++) particles.push(new Particle());
+        for (let i = 0; i < 80; i++) particles.push(new Particle());
 
         function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
             particles.forEach(p => { p.update(); p.draw(); });
             requestAnimationFrame(animate);
         }
         animate();
 
         // --- DYNAMIC SCROLLING EFFECTS ---
-
-        // 1. Scroll Progress
         gsap.to("#progress-bar", {
             width: "100%",
             ease: "none",
@@ -718,11 +739,10 @@
             }
         });
 
-        // 2. Hero Parallax
         gsap.to(".duck-main", {
-            y: 200,
+            y: 150,
             opacity: 0,
-            scale: 0.5,
+            scale: 0.7,
             scrollTrigger: {
                 trigger: "header",
                 start: "top top",
@@ -731,7 +751,6 @@
             }
         });
 
-        // 3. Music Triggers
         ScrollTrigger.create({
             trigger: "#vent-section",
             start: "top center",
@@ -746,52 +765,98 @@
             onLeaveBack: () => crossfade('vent')
         });
 
-        // Section Fade-ins
         gsap.utils.toArray(".section-container").forEach(section => {
             gsap.to(section, {
                 opacity: 1,
                 y: 0,
-                duration: 1.2,
+                duration: 1,
                 ease: "power2.out",
                 scrollTrigger: {
                     trigger: section,
-                    start: "top 85%",
+                    start: "top 90%",
                     toggleActions: "play none none reverse"
                 }
             });
         });
 
-        // Polaroid Staggered Reveal
         gsap.to(".polaroid", {
             opacity: 1,
             scale: 1,
             y: 0,
-            duration: 1,
-            stagger: 0.2,
-            ease: "back.out(1.7)",
+            duration: 0.8,
+            stagger: 0.15,
+            ease: "back.out(1.2)",
             scrollTrigger: {
                 trigger: ".miss-you-grid",
-                start: "top 80%"
+                start: "top 85%"
             }
         });
 
         // --- DODGE MECHANIC ---
         let firstDodge = true;
-        const dodgeTexts = ["Still Too Hurt 💔", "Not ready yet...", "It hurts too much.", "I need more time.", "The bin is empty.", "Silence is safer.", "Wait...", "I'm still sad. 🌧️"];
+        const dodgeTexts = ["Still Too Hurt 💔", "Not ready yet...", "Wait...", "I'm still sad. 🌧️", "Try again!", "Nope! 🦆"];
 
         function dodge() {
             const btn = document.getElementById('run-away-btn');
+            const mainBtn = document.getElementById('forgive-btn');
             const group = document.getElementById('btn-group');
-            const groupRect = group.getBoundingClientRect();
             
+            const groupRect = group.getBoundingClientRect();
+            const mainRect = mainBtn.getBoundingClientRect();
+            const btnRect = btn.getBoundingClientRect();
+
             if (firstDodge) {
                 btn.style.position = 'absolute';
                 firstDodge = false;
             }
+
             btn.innerText = dodgeTexts[Math.floor(Math.random() * dodgeTexts.length)];
-            let newX = (Math.random() - 0.5) * (groupRect.width - 150);
-            let newY = (Math.random() - 0.5) * (groupRect.height - 100);
-            gsap.to(btn, { x: newX, y: newY, rotation: (Math.random() - 0.5) * 20, duration: 0.3, ease: "elastic.out(1, 0.6)" });
+
+            // Define safe bounds within the container
+            const margin = 15;
+            const containerW = groupRect.width;
+            const containerH = groupRect.height;
+            
+            // Calculate Main Button relative coordinates within container
+            const mainX = mainRect.left - groupRect.left;
+            const mainY = mainRect.top - groupRect.top;
+            const mainW = mainRect.width;
+            const mainH = mainRect.height;
+
+            let validMove = false;
+            let targetX, targetY;
+
+            // Simple retry loop to find a spot that doesn't overlap the main button
+            for (let i = 0; i < 15; i++) {
+                targetX = Math.random() * (containerW - btnRect.width - (margin * 2)) + margin - (containerW / 2);
+                targetY = Math.random() * (containerH - btnRect.height - (margin * 2)) + margin - (containerH / 2);
+
+                // Convert target back to relative from top-left for overlap check
+                const checkX = targetX + (containerW / 2);
+                const checkY = targetY + (containerH / 2);
+
+                // Check overlap with Main Button (plus some buffer)
+                const buffer = 30;
+                const isOverlapping = !(
+                    checkX + btnRect.width + buffer < mainX ||
+                    checkX > mainX + mainW + buffer ||
+                    checkY + btnRect.height + buffer < mainY ||
+                    checkY > mainY + mainH + buffer
+                );
+
+                if (!isOverlapping) {
+                    validMove = true;
+                    break;
+                }
+            }
+
+            gsap.to(btn, { 
+                x: targetX, 
+                y: targetY, 
+                rotation: (Math.random() - 0.5) * 20, 
+                duration: 0.2, 
+                ease: "power2.out" 
+            });
         }
 
         // --- FORGIVENESS ---
@@ -817,13 +882,16 @@
                 const milestone = milestones.find(m => forgiveness <= m.limit) || milestones[milestones.length - 1];
                 meterEmoji.innerText = milestone.emoji;
                 meterText.innerText = milestone.text;
-                createFloatingText(e.clientX, e.clientY, "Mending... ❤️");
+                
+                const posX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+                const posY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+                createFloatingText(posX, posY, "Mending... ❤️");
                 
                 if (forgiveness >= 100) {
                     setTimeout(() => {
                         victory.style.display = 'flex';
                         crossfade('love'); 
-                        gsap.from(".final-apology-box", { scale: 0.8, opacity: 0, duration: 0.8 });
+                        gsap.from(".final-apology-box", { scale: 0.9, opacity: 0, duration: 0.6 });
                         startHeartRain();
                     }, 800);
                 }
@@ -831,7 +899,9 @@
         }
 
         function handleThankYou(e) {
-            createFloatingText(e.clientX, e.clientY, "Thank you for listening to my heart ❤️", 2.5);
+            const posX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+            const posY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+            createFloatingText(posX, posY, "Thank you for your time reading this ❤️", 3);
         }
 
         function sendEmail() {
@@ -845,36 +915,52 @@
             document.getElementById('gif-placeholder').style.display = 'none';
             img.src = gifs[Math.floor(Math.random() * gifs.length)];
             img.style.display = 'block';
-            createFloatingText(e.clientX, e.clientY, "I deserve it 🥺");
+            const posX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+            const posY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+            createFloatingText(posX, posY, "I deserve it 🥺");
         }
 
         const gifs = [
-            "https://media.tenor.com/TLPLeyipKPgAAAAj/bear.gif",
-            "https://media.tenor.com/4l5NsL-5LZcAAAAj/tkthao219-bubududu.gif",
-            "https://media.tenor.com/pZR1wz2VO9AAAAAj/bubududu-panda.gif"
+            "https://media.tenor.com/TLPLeyipKPgAAAAj/bear.gif" ,
+            "https://media.tenor.com/4l5NsL-5LZcAAAAj/tkthao219-bubududu.gif" ,
+            "https://media.tenor.com/pZR1wz2VO9AAAAAj/bubududu-panda.gif" ,
+            "https://media.tenor.com/vsBS2rmx0UYAAAAj/bubududu-panda.gif" ,
+            "https://media.tenor.com/NWu6IIbVGQ4AAAAj/bubu-bear-dudu.gif",
+            "https://media.tenor.com/N8Ah9_7yMugAAAAj/hit-bubu.gif" ,
+            "https://media.tenor.com/vB_o8-f2GFgAAAAj/mimibubu.gif" ,
+            "https://media.tenor.com/PJswmPPRD4gAAAAj/bubududu-panda.gif" ,
+            "https://media.tenor.com/aflhqhwbfmUAAAAj/sseeyall-bubu-dudu.gif" ,
+            "https://media.tenor.com/mZZUH9JD1s0AAAAj/bubu-dudu-sseeyall.gif"
         ];
 
         function createFloatingText(x, y, text, duration = 1) {
             const el = document.createElement('div');
             el.className = 'feedback-text';
             el.innerText = text;
-            el.style.left = (x - 100) + 'px'; 
-            el.style.top = y + 'px';
+            el.style.left = Math.max(0, Math.min(window.innerWidth - 150, x - 75)) + 'px'; 
+            el.style.top = (y - 20) + 'px';
             document.body.appendChild(el);
-            gsap.to(el, { y: -80, opacity: 0, duration: duration, onComplete: () => el.remove() });
+            gsap.to(el, { y: -60, opacity: 0, duration: duration, onComplete: () => el.remove() });
         }
 
         function startHeartRain() {
             const container = document.getElementById('heart-rain');
-            setInterval(() => {
+            const rainInterval = setInterval(() => {
+                if (victory.style.display === 'none') return clearInterval(rainInterval);
                 const h = document.createElement('div');
                 h.innerText = '❤️';
                 h.style.position = 'absolute';
                 h.style.left = Math.random() * 100 + 'vw';
                 h.style.top = '-50px';
+                h.style.fontSize = (Math.random() * 10 + 15) + 'px';
                 container.appendChild(h);
-                gsap.to(h, { y: window.innerHeight + 100, duration: 2, onComplete: () => h.remove() });
-            }, 100);
+                gsap.to(h, { 
+                    y: window.innerHeight + 100, 
+                    x: (Math.random() - 0.5) * 100,
+                    duration: Math.random() * 1 + 2, 
+                    onComplete: () => h.remove() 
+                });
+            }, 150);
         }
     </script>
 </body>
